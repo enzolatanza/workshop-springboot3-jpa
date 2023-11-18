@@ -1,12 +1,15 @@
 package com.enzolatanza.course.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 //implementar interface Serializable para que o o objeto possa ser transformado em cadeia de bytes
 //e assim trafegar na rede, gravar em arquivos
@@ -22,6 +25,11 @@ public class User implements Serializable{
 	private String email;
 	private String phone;
 	private String password;
+	
+	//um usuario tem vários pedidos
+	//mapeado pelo atributo client
+	@OneToMany(mappedBy = "client")
+	private List<Order> orders = new ArrayList<>();
 	
 	//Obrigatoriamente deve-se criar os construtores para o framework
 	public User() {}
@@ -73,6 +81,11 @@ public class User implements Serializable{
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
+	public List<Order> getOrders() {
+		return orders;
+	}
+	
 	
 	//para compara um objeto com outro por padrão será usado apenas o id
 
@@ -92,6 +105,7 @@ public class User implements Serializable{
 		User other = (User) obj;
 		return Objects.equals(id, other.id);
 	}
+
 
 	
 	
