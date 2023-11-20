@@ -4,10 +4,13 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.enzolatanza.course.entities.User;
 import com.enzolatanza.course.repositories.UserRepository;
+import com.enzolatanza.course.services.exceptions.DatabaseException;
 import com.enzolatanza.course.services.exceptions.ResourceNotFoundException;
 
 //Registrando um componente com @Component
@@ -30,7 +33,24 @@ public class UserService {
 		return repository.save(obj);
 	}
 	public void delete(Long id) {
-		repository.deleteById(id);
+		try {
+			repository.deleteById(id);
+		}catch(EmptyResultDataAccessException e) {
+			throw new ResourceNotFoundException(id);
+		}catch(DataIntegrityViolationException e) {
+			throw new DatabaseException(e.getMessage());
+		}
+		
+		/*
+		 * SEMPRE QUE QUISER SABER QUAL EXCEÇÃO ESTA DANDO  USAR
+		 * A ROTINA ABAIXO QUE CAPTURA A EXCEÇÃO E LANÇA
+		 * NO CONSOLE
+		 * catch(RuntimeException e) {
+			throw new e.printStackTrace();
+		}
+		*/
+		
+		
 	}
 	public User update(Long id, User obj) {
 		//pega um objeto monitorado 
