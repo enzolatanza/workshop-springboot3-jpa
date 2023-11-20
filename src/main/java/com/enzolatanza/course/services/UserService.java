@@ -13,6 +13,8 @@ import com.enzolatanza.course.repositories.UserRepository;
 import com.enzolatanza.course.services.exceptions.DatabaseException;
 import com.enzolatanza.course.services.exceptions.ResourceNotFoundException;
 
+import jakarta.persistence.EntityNotFoundException;
+
 //Registrando um componente com @Component
 @Service
 public class UserService {
@@ -54,9 +56,13 @@ public class UserService {
 	}
 	public User update(Long id, User obj) {
 		//pega um objeto monitorado 
-		User entity = repository.getReferenceById(id);
-		updateData(entity, obj);
-		return repository.save(entity);
+		try {
+			User entity = repository.getReferenceById(id);
+			updateData(entity, obj);
+			return repository.save(entity);
+		}catch(EntityNotFoundException e) {
+			throw new ResourceNotFoundException(id);
+		}
 	}
 	private void updateData(User entity, User obj) {
 		entity.setName(obj.getName());
